@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mitmproxy:
+    image: dockerproxy.net/mitmproxy/mitmproxy
+    container_name: mitmproxy_container
+    environment:
+      - MITMPROXY_PORT=8080
+      - MITMWEB_PORT=8081
+      - LISTEN_PORT=9090
+      - WORKDIR_PATH=/home/mitmproxy
+      - ALLOW_HOSTS=thirdqq.qlogo.cn
+    volumes:
+      - ./data:/home/mitmproxy # 容器的配置文件夹映射到主机的 ./data 目录
+      - ./data/.mitmproxy:/home/mitmproxy/.mitmproxy # 挂载 .mitmproxy 文件夹用于证书存储
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "9090:9090"
+    command: ["mitmdump", "--listen-port", "${LISTEN_PORT:-9090}", "--allow-hosts", "${ALLOW_HOSTS:-thirdqq.qlogo.cn}", "-s", "/home/mitmproxy/response.py", "--mode", "regular"]
+    restart: always
